@@ -11,53 +11,25 @@ import type { Task } from './components/api/task.ts';
 interface TaskOverview {
     tasks: Task[];
     isLoading: boolean;
-    deleteTasks: (uuid: string[]) => Promise<void[]>;
-    updateTaskList: () => void;
+    deleteTasks: (uuid: string[]) => void;
 }
 
 
 function TaskOverview(props: TaskOverview) {
     const navigate = useNavigate();
-    
+
     const onEditTaskClick = (index: number) => {
         navigate(`/edit/${props.tasks[index].id}`);
-    }
+    };
 
     const onAddTaskClick = () => {
         navigate('/add');
-    }
-
-    const getStateAsString = (state: number) => {
-        switch(state) {
-            case 3: { 
-                return "Deprecated";
-            } 
-            case 2: { 
-                return "Done";
-            }
-            case 1: { 
-                return "In Progress";
-            } 
-            default: { 
-                return "Open";
-            } 
-        }
-    }
-
-    const getFormattedDeadline = (deadline: Date |undefined) => {
-        if (deadline && deadline !== undefined)
-        {
-            return format(deadline, "dd MMMM yyyy");
-        }
-
-        return "";
-    }
+    };
 
     //TODO
     //Funktioniert nicht, da sich die Formate unterscheiden.
     const isReached = (deadline: Date | undefined) => {
-        if (deadline)
-        {
+        if (deadline) {
             const deadlineDate = new Date(deadline);
             const now = new Date();
             const nowUTC = new Date(
@@ -77,30 +49,21 @@ function TaskOverview(props: TaskOverview) {
             }
         }
         return false;
-    }
+    };
 
     const onClearTasksClicked = () => {
         let allTasks: string[] = [];
         for (const task of props.tasks) {
             allTasks = [...allTasks, task.id];
         }
-        console.log(allTasks);
+        //console.log(allTasks);
 
-        props.deleteTasks(allTasks).then(() => {
-            props.updateTaskList();
-        }).catch(err => {
-            console.log(err);
-        });
-        
-    }
+        props.deleteTasks(allTasks);
+    };
 
     const onDeleteTaskClicked = (index: number) => {
-        props.deleteTasks([props.tasks[index].id]).then(() => {
-            props.updateTaskList();
-        }).catch(err => {
-            console.log(err);
-        });
-    }
+        props.deleteTasks([props.tasks[index].id]);
+    };
 
     return (
         <>
@@ -125,7 +88,7 @@ function TaskOverview(props: TaskOverview) {
 
                                     <div className="TaskOverviewGroup gap-10">
                                         <Label className="w-full TaskOverviewLabel">
-                                            Status: 
+                                            Status:
 
                                             <span className={cn("text-red-500", {
                                                 "text-blue-500": item.state === 1,
@@ -137,7 +100,7 @@ function TaskOverview(props: TaskOverview) {
                                         </Label>
 
                                         <Label className="w-full TaskOverviewLabel">
-                                            Deadline: 
+                                            Deadline:
 
                                             <span className={cn("text-red-500", {
                                                 "text-green-600": isReached(item.deadline) === true,
@@ -154,13 +117,13 @@ function TaskOverview(props: TaskOverview) {
                                             {`Current Workload: ${item.currentWorkload}h`}
                                         </Label>
                                     </div>
-                                
+
 
                                     <div className="BtnGroup mt-2">
                                         <Button className="shadow-md bg-orange-400" onClick={() => onEditTaskClick(index)}>
                                             Edit
                                         </Button>
-                                        
+
                                         <Button className="shadow-md bg-gray-500 mx-3" onClick={() => onDeleteTaskClicked(index)}>
                                             Delete
                                         </Button>
@@ -177,12 +140,37 @@ function TaskOverview(props: TaskOverview) {
                 </div>
             )}
             {props.isLoading === true && (
-              <>
-                <p>Load Data...</p>
-              </>
+                <>
+                    <p>Load Data...</p>
+                </>
             )}
         </>
     );
 };
 
 export default TaskOverview;
+
+const getStateAsString = (state: number) => {
+    switch (state) {
+        case 3: {
+            return "Deprecated";
+        }
+        case 2: {
+            return "Done";
+        }
+        case 1: {
+            return "In Progress";
+        }
+        default: {
+            return "Open";
+        }
+    }
+};
+
+const getFormattedDeadline = (deadline: Date | undefined) => {
+    if (deadline) {
+        return format(deadline, "dd MMMM yyyy");
+    }
+
+    return "";
+};
