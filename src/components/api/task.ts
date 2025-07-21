@@ -10,7 +10,7 @@ export interface Task {
 }
 
 //const API_URL: string = 'https://683ee97c1cd60dca33dd8abe.mockapi.io/tasks';
-const API_URL: string = 'http://localhost:8888/index.php/users/1/tasks';
+const API_URL: string = 'http://127.0.0.1:8000/tasks';
 
 /*
 function generateUUIDv4(): string {
@@ -34,7 +34,7 @@ function generateUUIDv4(): string {
 */
 
 function getTasks(): Promise<Task[]> {
-    return fetch(API_URL /*+ "?test=hallo&test2=moin"*/, {
+    return fetch(API_URL + "/" /*+ "?test=hallo&test2=moin"*/, {
         method: 'GET',
         headers: { 'content-type': 'application/json' },
     }).then(res => res.json());
@@ -48,7 +48,7 @@ function getTask(id: string): Promise<Task> {
 }
 
 function deleteTask(id: string): Promise<any> {
-    return fetch(API_URL + "/" + id, {
+    return fetch(API_URL + "/delete/" + id, {
         method: 'DELETE',
         headers: { 'content-type': 'application/json' },
     }).then(res => res.json());
@@ -67,17 +67,26 @@ async function deleteTasks(ids: string[]): Promise<any[]> {
 }
 
 function addTask(task: Task): Promise<any> {
-    return fetch(API_URL, {
+    return fetch(API_URL + "/new", {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-
-        body: JSON.stringify(task),
+        body: JSON.stringify(
+            {
+                title: task.title,
+                description: task.description,
+                deadline: task.deadline,
+                estimatedWorkload: task.estimatedWorkload,
+                currentWorkload: task.currentWorkload,
+                state: task.state,
+                uuid: "gibbet noch nicht"
+            }
+        ),
     }).then(res => res.json());
 }
 
 function editTask(task: Task): Promise<any> {
     //update timestamp
-    return fetch(API_URL + "/" + task.id, {
+    return fetch(API_URL + "/update/" + task.id, {
         method: 'PUT',
         headers: { 'content-type': 'application/json' },
 
